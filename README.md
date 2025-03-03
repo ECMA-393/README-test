@@ -25,6 +25,19 @@
 ### 어떻게 북마크를 가져올까?
 프로젝트를 시작하기 위해선 프로젝트 키워드인 사용자의 크롬 북마크를 수집해야 했습니다.
 북마크를 가져오기 위해 chromeAPI를 사용하기 위해 익스텐션을 선택한 것이기 떄문에, chromeAPI를 사용해 북마크를 가져오고자 했습니다.
+공식문서에서 chromeAPI.getBookmark()를 사용한 예제를 참고하여 가져오고자 했으나 dom을 직접적으로 건드리는 형태임을 확인했습니다.
+공식문서의 예문처럼 Dom으로 컨트롤하기엔 react에서는 지양해야할 방향성이므로 다른방법을 모색하던 와중 순수하게 
+chromeAPI.getBookmark()가 어떤 data를 가져오는지 의문이 들어 자료를 꺼내 확인 해보았습니다.
+
+``` js
+  useEffect(() => {
+    chrome.bookmarks.getTree((treeList) => {
+      console.log(treeList);
+      getNewTree(treeList);
+    });
+  }, []);
+```
+  
 ```chromeAPI.getBookmark()``` 로 가져온 북마크는 사용자 북마크 폴더 개수에 따라 얼마든지 중첩이 가능한 구조였습니다.
 
 ![트리구조](https://github.com/user-attachments/assets/8694307c-720f-4d15-9c86-9edfc674d02b)
