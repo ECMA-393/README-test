@@ -77,6 +77,15 @@ const getNewTree = (nodeItems) => {
 저희가 맨 처음 생각한 방법은 북마크 URL을 받으면 해당 URL로 fetch를 요청하고 요청한 URL에 대한 HTML 문자열을 받아온 후 그 HTML에서 일치하는 내용을 찾는 것이 목표였습니다.<br />
 MPA[Multi Page Application]일 경우 저희 의도대로 HTML을 추출하고 일치하는 키워드를 찾을 수 있었지만, SPA[Single Page Application}의 경우 가져오는 HTML은 렌더링 되기 전의 비어있는 HTML로 일치하는 키워드를 찾을 수 없었습니다.<br />
 iframe의 경우도 마찬가지로 HTML을 fetch로 요청하여 응답받을 시 iframe 내부 html에 접근이 불가능 했습니다.<br /><br />
+
+<div align="center">
+  
+  | | MPA | SPA |
+  | ----- | ------ | ------ | 
+  | 렌더링 시점 | 완성된 페이지 전체를 렌더링 | HTML에 페이지의 일부분을 받아 점진적 렌더링 |
+  
+</div>
+
 MPA와 더불어 SPA와 iframe까지 대응하기 위해 Puppeteer의 헤드리스 브라우저 모드를 사용하여 SPA의 경우 인간적인 브라우징 패턴을 모방해서 SPA페이지 로딩을 기다리고 iframe 내부 내용또한 읽어와 해당 컨텐츠 내에 접근할 수 있었습니다.<br />
 iframe경우 iframe내부에 독립적인 DOM을 제공하기 때문에 innerText를 통해 접근할 수 없던 문제가 있었지만 iframe이 발견 되면 iframe src속성을 통해 iframe내부 크롤링을 시작하고, 내부에서도 일치하는 키워드가 있는지 찾아낼 수 있었습니다.<br />
 
