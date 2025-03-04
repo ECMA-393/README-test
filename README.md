@@ -74,11 +74,11 @@ const getNewTree = (nodeItems) => {
 ```
 
 ### SPA, Iframe 해결
-저희가 맨 처음 생각한 방법은 fetch를 통해 html을 받아온 후 그 html에서 일치하는 내용을 찾는 것이었습니다. 많은 웹이 SPA로 작성되어 있거나 iframe으로 작성된 부분이 많이 있었기 때문에 이 문제를 크롤링으로 해결해보고자 하였습니다.
-iframe 태그는 iframe내부에 독립적인 DOM을 제공하기 때문에 innerText를 통해 접근할 수 없던 문제가 있었지만 iframe이 발견 되면 iframe src속성을 통해 iframe내부 크롤링을 시작하고, 내부에서도 일치하는 키워드가 있는지 찾아낼 수 있었습니다.
-
-Puppeteer의 헤드리스 브라우저 모드를 사용하여 인간적인 브라우징 패턴을 모방해서 SPA페이지 로딩을 기다리고 iframe 내부 내용또한 읽어와 해당 컨텐츠 내에 접근할 수 있었습니다.
-
+저희가 맨 처음 생각한 방법은 북마크 URL을 받으면 해당 URL로 fetch를 요청하고 요청한 URL에 대한 HTML 문자열을 받아온 후 그 HTML에서 일치하는 내용을 찾는 것이 목표였습니다.<br />
+MPA[Multi Page Application]일 경우 저희 의도대로 HTML을 추출하고 일치하는 키워드를 찾을 수 있었지만, SPA[Single Page Application}의 경우 가져오는 HTML은 렌더링 되기 전의 비어있는 HTML로 일치하는 키워드를 찾을 수 없었습니다.<br />
+iframe의 경우도 마찬가지로 HTML을 fetch로 요청하여 응답받을 시 iframe 내부 html에 접근이 불가능 했습니다.<br /><br />
+MPA와 더불어 SPA와 iframe까지 대응하기 위해 Puppeteer의 헤드리스 브라우저 모드를 사용하여 SPA의 경우 인간적인 브라우징 패턴을 모방해서 SPA페이지 로딩을 기다리고 iframe 내부 내용또한 읽어와 해당 컨텐츠 내에 접근할 수 있었습니다.<br />
+iframe경우 iframe내부에 독립적인 DOM을 제공하기 때문에 innerText를 통해 접근할 수 없던 문제가 있었지만 iframe이 발견 되면 iframe src속성을 통해 iframe내부 크롤링을 시작하고, 내부에서도 일치하는 키워드가 있는지 찾아낼 수 있었습니다.<br />
 
 ### 어떻게 키워드가 포함된 문장을 가져올까?
 ![image (3)](https://github.com/user-attachments/assets/bf9e36aa-db03-42fd-bb66-f0000709f0e3)
