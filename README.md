@@ -179,9 +179,27 @@ ReferenceError: localStorage is not defined
 
 
 ## 4. 협업 방식
-- 코어 타임: 오전 10시 ~ 오전 12시
-- 
+- 코어 타임: 오전 10시 ~ 오전 12시<br />
+  매일 정해진 시간에 오프라인 방식으로 모여 직접 스크럼 회의를 통해 협업 상황에서 발생할 수 있는 깃 전략, 컨벤션 문제들을 공유하고 같이 해결해 나갔습니다.<br /><br />
+  <div align="center">
+    <img width="500" src="https://github.com/user-attachments/assets/7ab3d487-5de3-42c6-9aa2-acc41ec7b1fe" />
+  </div>
 
+- Git Flow 전략 + Squash merge를 통한 깔끔한 커밋 기록<br />
+```
+  main, dev, feature 3가지 종류로 브랜치를 나누고 
+  1. dev 브랜치로 이동
+  2. dev 브랜치에서 `git pull origin dev`
+  3. `git checkout -b feature branch`
+  4. feature branch 에서 개발작업
+  5. `git push origin newBranch`
+  6. PR 제출 방향은 dev 브랜치 ← feature branch (작업 브랜치)
+  7. PR 코드리뷰 완료 후 merge는 squash merge
+  - 다른 사람이 dev 브랜치로 PR을 끝내면 나머지 사람들은 작업 브랜치에서 dev브랜치 pull 받기
+  - merge시, 충돌 발생하면 merge 메세지에 충돌을 난 이유 적기
+      
+      ex) `merge: 어떤 파일 몇번째 라인 충돌 해결`
+```
 
 ## 5. 일정
 
