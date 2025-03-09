@@ -92,9 +92,8 @@ const getNewTree = (nodeItems) => {
 ```
 
 ### 3-2. 크롤링을 선택한 이유[SPA, Iframe 해결]
-저희가 처음 생각한 방법은 북마크 URL을 받으면 해당 URL로 fetch를 요청하고 요청한 URL에 대한 HTML 문자열을 받아온 후 그 HTML에서 일치하는 내용을 찾는 것이 목표였습니다.<br />
-MPA[Multi Page Application]일 경우 저희 의도대로 HTML을 추출하고 일치하는 키워드를 찾을 수 있었지만, SPA[Single Page Application}의 경우 가져오는 HTML은 렌더링 되기 전의 비어있는 HTML로 일치하는 키워드를 찾을 수 없었습니다.<br />
-iframe의 경우도 마찬가지로 HTML을 fetch로 요청하여 응답받을 시 iframe 내부 html에 접근이 불가능 했습니다.<br /><br />
+저희가 처음에 생각한 방법은 북마크 URL을 받아 해당 URL로 fetch 요청을 보내고, 응답으로 받은 HTML 문자열에서 사용자가 입력한 키워드를 찾는 것이었습니다. 그러나 이 방법은 몇 가지 문제점이 있었습니다.<br />
+먼저, MPA(Multi Page Application)의 경우, fetch 요청으로 가져온 HTML에서 키워드를 쉽게 찾을 수 있었습니다. MPA는 완성된 페이지 전체를 렌더링하기 때문에 저희의 의도대로 HTML을 추출하고 일치하는 키워드를 찾는 것이 가능했습니다. 그러나 SPA(Single Page Application)의 경우, fetch 요청으로 가져오는 HTML은 렌더링되기 전의 비어있는 상태일 수 있어 키워드를 찾을 수 없었습니다. SPA는 HTML의 일부만 받아 점진적으로 렌더링하기 때문에 이와 같은 문제가 발생했습니다.<br />
 
 <div align="center">
   
@@ -104,8 +103,11 @@ iframe의 경우도 마찬가지로 HTML을 fetch로 요청하여 응답받을 �
   
 </div>
 
-MPA와 더불어 SPA와 iframe까지 대응하기 위해 Puppeteer의 헤드리스 브라우저 모드를 사용하여 SPA의 경우 인간적인 브라우징 패턴을 모방해서 SPA페이지 로딩을 기다리고 iframe 내부 내용또한 읽어와 해당 컨텐츠 내에 접근할 수 있었습니다.<br />
-iframe경우 iframe내부에 독립적인 DOM을 제공하기 때문에 innerText를 통해 접근할 수 없던 문제가 있었지만 iframe이 발견 되면 iframe src속성을 통해 iframe내부 크롤링을 시작하고, 내부에서도 일치하는 키워드가 있는지 찾아낼 수 있었습니다.<br />
+iframe의 경우도 마찬가지로, fetch 요청으로 응답받은 HTML에서는 iframe 내부의 내용을 접근할 수 없는 문제가 있었습니다. iframe 내부의 DOM은 독립적이기 때문에 innerText를 통해 접근할 수 없었습니다.<br />
+이를 해결하기 위해 Puppeteer의 헤드리스 브라우저 모드를 사용했고, MPA뿐만 아니라 SPA와 iframe까지 대응할 수 있었습니다.
+1. SPA 페이지 로딩 대기: Puppeteer를 사용하여 인간적인 브라우징 패턴을 모방하고, SPA 페이지가 완전히 로딩될 때까지 대기합니다. 이를 통해 페이지가 완전히 렌더링된 후의 HTML을 가져올 수 있습니다.
+2. iframe 내부 내용 접근: Puppeteer를 사용하여 iframe 내부의 내용을 읽어올 수 있습니다. iframe이 발견되면, iframe의 src 속성을 통해 iframe 내부로 이동하여 크롤링을 시작합니다. 이를 통해 iframe 내부의 DOM에 접근하고, 일치하는 키워드를 찾을 수 있습니다.
+이를 통해 SPA와 iframe 문제를 해결하고, 사용자가 입력한 키워드를 보다 더 넓은 범위로 대응할 수 있게 되었습니다.<br />
 
 ### 3-3. 어떻게 키워드가 포함된 문장을 가져올까?
 ![image (3)](https://github.com/user-attachments/assets/bf9e36aa-db03-42fd-bb66-f0000709f0e3)
