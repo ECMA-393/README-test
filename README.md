@@ -199,7 +199,7 @@ const isCheckTrueThisUrl = (url) => {
 그 반대로 URL은 정상이나 서버가 응답하지 않아서 크롤링을 진행할 수 없을 때는 클라이언트로 500번 에러를 전송합니다.<br />
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/ab37a5c4-d90e-4d6d-8e78-7af669af5e2c"/>
+  <img width="500" src="https://github.com/user-attachments/assets/ab37a5c4-d90e-4d6d-8e78-7af669af5e2c"/>
 </div>
 이렇게 전달받은 에러들은 사용자에게 어떠한 이유로 해당 북마크에 접근하지 못했고 총 몇개의 북마크를 가지고 오지 못했는지 표시되는 용도로 사용됩니다.<br />
 
