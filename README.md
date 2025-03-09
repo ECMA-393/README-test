@@ -156,7 +156,7 @@ const getAllSentence = (innerText) => {
 
 #### 3-5-1. 가져온 HTML을 어디에 저장할지의 문제
 firebase, mongoDB 등 다양한 스토리지가 있지만 저희는 익스텐션 LocalStorage에 저장하기로 했습니다.<br />
-익스텐션 LocalStorage는 크롬 익스텐션에서 제공해주는 스토리지로 최대 10mb까지 사용할 수 있고 사용하기에 간편하다는 장점이 시간이 부족했던 저희 프로젝트에 적합한 선택이었다고 생각합니다.<br /><br />
+익스텐션 LocalStorage는 크롬 익스텐션에서 제공해주는 스토리지로 최대 10mb까지 사용할 수 있고 사용하기에 간편하다는 장점이 있고 또한, 옵션 페이지를 적용한 저희 익스텐션에서 옵션 페이지와 익스텐션 간의 데이터 공유 시 LocalStorage를 사용해 편리하게 공유할 수 있기에 적합한 선택이라고 생각했습니다.<br /><br />
 LocalStorage의 부족한 용량을 넘기면 생기는 에러를 피하기 위해 ```StorageManager API``` 를 사용하여 현재 용량을 확인하고, 만약 용량으 넘길 시 기존에 있던 HTML 본문 중 가장 오래된 요소를 지우고 최신 요소를 넣는 방법을 선택했습니다.
 ```js
 searchBookmarkList: {searchKeyword1: {list}, searchKeyword2: {list}}
@@ -170,9 +170,41 @@ ReferenceError: localStorage is not defined
 ## 용량 체크 써주세요 성훈님
 
 ### 3.6. 북마크들의 서버, 페이지가 유효하지 않은 경우
+사용자가 어떤 북마크에 어떤 내용이 있는지 알고 있는 상태에서 검색을 진행할 경우가 있는데 사용자가 알고 있는 것과 달리 오래된 북마크의 경우 북마크 페이지가 유효하지 않거나, 서버가 응답하지 않는 경우 왜 검색이 제대로 되지 않는지에 대해 의아해 할 수 있기 때문에, 북마크들에 대한 에러처리가 필요했습니다.<br />
+에러 처리를 하기 위해선 해당 URL에 대해 서버가 응답하지 않는지, 페이지가 없는지에 대해 판단할 필요가 있었고 다음과 같이 처리했습니다.
+```js
+catch (error) {
+  if (!isCheckTrueThisUrl(decodedLink)) {
+    return res
+      .status(400)
+      .send({ message: `[Invalid Characters in HTTP request]  ${error}` });
+  } else {
+    return res
+      .status(500)
+      .send({ message: `[ServerError occured] ${error}` });
+  }
+} 
 
+// 정상 URL 확인 함수
+const isCheckTrueThisUrl = (url) => {
+  const urlRegex = /^(http|https):\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/;
+  if (urlRegex.test(url)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+```
+북마크 URL 요청에 따라 크롤링을 해주는 Puppeteer에서 Error를 던져주기 때문에 ```try...catch```의 catch 부분에서 해당 에러에 대해 유효한 URL인지 정규식으로 판단 후 400번의 에러를 클라이언트로 전송합니다.<br />
+그 반대로 URL은 정상이나 서버가 응답하지 않아서 크롤링을 진행할 수 없을 때는 클라이언트로 500번 에러를 전송합니다.<br />
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/ab37a5c4-d90e-4d6d-8e78-7af669af5e2c"/>
+</div>
+이렇게 전달받은 에러들은 사용자에게 어떠한 이유로 해당 북마크에 접근하지 못했고 총 몇개의 북마크를 가지고 오지 못했는지 표시되는 용도로 사용됩니다.<br />
 
 ### 3-7. 어떻게 익스텐션과 웹 페이지간 데이터를 연결 시킬 수 있을까?
+
 
 
 ### 3-8. 받아온 문장에서 일치하는 키워드를 하이라이팅 처리하기
