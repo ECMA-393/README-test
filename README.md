@@ -1,8 +1,8 @@
 # 📚 UrLink
 
 <div align="center">
-  
-  ![Group 1 (3)](https://github.com/user-attachments/assets/19540f6e-1863-4ad2-a809-05097272441c)
+
+  ![Group 1 (3)](https://github.com/user-attachments/assets/20c8066b-e725-4f7b-975b-5ebc11aa995f)
 
   URLink는 북마크 제목만으로는 파악하기 어려운 내부에 키워드를 검색하여 필요한 정보를 찾아주는 서비스입니다.
 </div>
@@ -63,7 +63,7 @@ React 기반으로 개발 중이었기 때문에 DOM을 직접 조작하는 방�
   
 ```chrome.bookmarks.get``` 로 가져온 북마크는 사용자 북마크 폴더 개수에 따라 얼마든지 중첩이 가능한 구조였습니다.
 
-![트리구조](https://github.com/user-attachments/assets/8694307c-720f-4d15-9c86-9edfc674d02b)
+![트리구조](https://github.com/user-attachments/assets/3c03b73c-46b6-44b1-8927-189628164a12)
 
 이러한 트리 구조는 React상태 관리시 불변성을 지키기 힘든 이슈가 있고, 불변성을 지키기 위해서 저희가 사용할 목적에 맞는 자료구조로의 개선이 필요했습니다. 
 저희는 사용자 폴더가 얼마나 트리 구조인지 알수 없기 때문에, 재귀를 사용해 얼마나 폴더가 중첩되어 있든 필요한 정보만 추출하여 리스트 저장해야 했기 때문에 재귀 함수를 작성하고자 했습니다.<br />
@@ -117,7 +117,7 @@ iframe의 경우도 마찬가지로, fetch 요청으로 응답받은 HTML에서�
 <br/>
 
 ### 3-3. 어떻게 키워드가 포함된 문장을 가져올까?
-![image (3)](https://github.com/user-attachments/assets/bf9e36aa-db03-42fd-bb66-f0000709f0e3)
+![image (3)](https://github.com/user-attachments/assets/9e1c519c-8c50-43e5-b5ca-e9d58a498d5d)
 가져온 문자열은 다음과 같이 HTML 문서 구조 내에서 요소들 사이의 공백과 개행을 유지하기 위해 개행문자가 포함돼 있는 문자열이었습니다.
 이를 해결하기 위해 정규 표현식을 사용하여 데이터를 가공했습니다.
 ```js
@@ -139,8 +139,8 @@ const getAllSentence = (innerText) => {
 또한 find함수를 통해 키워드를 포함하는 문장과 일치하는 첫 번째 문장을 가져오는 작업을 진행했지만, find함수는로 가져온 하나의 문장이 너무 긴 문자열을 포함해서 클라이언트 측에서 이 문자열을 표시하기에 어려움이 따랐기 때문에 문장을 단어 단위로 자르고, 키워드인 단어를 찾아서 그 단어 기준으로 "특정 단어 수" 만큼 데이터를 가져오도록 하여 해결했습니다.<br />
 
 <div align="center">
-  
-  ![스크린샷 2025-03-04 오후 5 22 21](https://github.com/user-attachments/assets/15e7525f-44ff-4719-8974-69ed3085235d)
+
+  ![스크린샷 2025-03-04 오후 5 22 21](https://github.com/user-attachments/assets/c15333f4-5f2e-40f7-a29b-278cabbd3908)
   
 </div>
 
@@ -158,7 +158,7 @@ const getAllSentence = (innerText) => {
 이 방법을 사용하여 북마크 개수에 따라 EC2 인스턴스가 다운되는 현상을 방지하고, 사용자가 결과를 최대한 빨리 확인할 수 있도록 개선했습니다.<br />
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/4e79ca05-b210-4bd5-b907-24d65a354e82" />
+  <img src="https://github.com/user-attachments/assets/be184ec0-cd19-48ab-92ac-0dd421fe2ba1" />
 </div>
 
 <br/>
@@ -188,7 +188,7 @@ ReferenceError: localStorage is not defined
 크롬 익스텐션에서는 크롤링된 데이터를 chrome.storage.local에 저장하여 추가적인 검색이 필요할 때 빠르게 조회할 수 있도록 설계했습니다. 하지만 Chrome Storage의 용량 제한(기본 10MB)으로 인해 저장 공간이 가득 차는 문제가 발생할 수 있었습니다. 이를 해결하기 위해, 저장 공간이 부족하면 가장 오래된 데이터를 자동으로 삭제한 후 새로운 데이터를 저장하는 방식을 적용했습니다.
 #### Storage 용량 초과 문제
 <div align="center">
-  <img width="700" src="https://github.com/user-attachments/assets/e63f101e-c058-4710-b934-9440f8ae390f"/>
+  <img width="700" src="https://github.com/user-attachments/assets/f30ca9bf-2d36-4bf4-83e2-d5dce8494df7"/>
 </div>
 
 </br>초기에는 데이터를 저장할 때 용량을 확인하지 않고 무조건 저장을 시도했습니다. 이로 인해 Storage가 가득 찬 상태에서도 계속 데이터를 추가하려다 보니 Unchecked runtime.lastError: QUOTA_BYTES quota exceeded 오류가 발생했습니다. 이를 해결하기 위해 저장 전에 현재 localStorage 사용량을 확인하고, 공간이 부족하면 가장 오래된 데이터를 삭제하는 방식을 사용했습니다.
@@ -227,7 +227,7 @@ const isCheckTrueThisUrl = (url) => {
 그 반대로 URL은 정상이나 서버가 응답하지 않아서 크롤링을 진행할 수 없을 때는 클라이언트로 500번 에러를 전송합니다.<br />
 
 <div align="center">
-  <img width="500" src="https://github.com/user-attachments/assets/ab37a5c4-d90e-4d6d-8e78-7af669af5e2c"/>
+  <img width="500" src="https://github.com/user-attachments/assets/900e30ee-8b3d-41c5-a2c9-44856427ef68"/>
 </div>
 이렇게 전달받은 에러들은 사용자에게 어떠한 이유로 해당 북마크에 접근하지 못했고 총 몇개의 북마크를 가지고 오지 못했는지 표시되는 용도로 사용됩니다.<br />
 
@@ -268,10 +268,11 @@ const isCheckTrueThisUrl = (url) => {
 - 코어 타임: 오전 10시 ~ 오전 12시<br />
   매일 정해진 시간에 오프라인 방식으로 모여 직접 스크럼 회의를 통해 협업 상황에서 발생할 수 있는 깃 전략, 컨벤션 문제들을 공유하고 같이 해결해 나갔습니다.<br /><br />
   <div align="center">
-    <img width="500" src="https://github.com/user-attachments/assets/7ab3d487-5de3-42c6-9aa2-acc41ec7b1fe" />
+    <img width="500" src="https://github.com/user-attachments/assets/690f4024-061f-493f-a9b5-59c67ac1ae8f" />
   </div>
 
-- Git Flow 전략 + Squash merge를 통한 깔끔한 커밋 기록<br />
+- Git Flow 전략 + Squas
+h merge를 통한 깔끔한 커밋 기록<br />
 ```
   main, dev, feature 3가지 종류로 브랜치를 나누고 
   1. dev 브랜치로 이동
