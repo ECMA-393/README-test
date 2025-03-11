@@ -4,39 +4,26 @@
 
   ![Group 1 (3)](https://github.com/user-attachments/assets/20c8066b-e725-4f7b-975b-5ebc11aa995f)
 
-  URLink는 북마크 제목만으로는 파악하기 어려운 내부에 키워드를 검색하여 필요한 정보를 찾아주는 서비스입니다.
+  북마크가 많아서 원하는 내용을 찾기 힘드신가요?<br />
+  URLink는 여러분이 직접 북마크 페이지에 방문하지 않아도, 사용자가 검색한 키워드를 기반으로 관련된 북마크를 정확하게 찾아주는 북마크 관리 서비스입니다.<br /><br />
+
 </div>
 
 
 ## 목차
-- [1. 개발 동기](#1-개발-동기)
-- [2. 기술 스택](#2-기술-스택)
-- [3. 구현 세부사항](#3-구현-세부사항)
-  - [3-1. 어떻게 북마크를 가져올까?](#3-1-어떻게-북마크를-가져올까)
-  - [3-2. SPA, Iframe 해결](#3-2-spa-iframe-해결)
-  - [3-3. 어떻게 키워드가 포함된 문장을 가져올까?](#3-3-어떻게-키워드가-포함된-문장을-가져올까)
-  - [3-4. 너무 느린 크롤링 속도 어떻게 해결할까?](#3-4-너무-느린-크롤링-속도-어떻게-해결할까)
-    - [3-4-1. 사용자 UI/UX를 통해 해결해보자.](#3-4-1-사용자-uiux를-통해-해결해보자)
-    - [3-4-2. 로직 변경을 통해 크롤링 서버 OOM을 피해보자.](#3-4-2-로직-변경을-통해-크롤링-서버-oom을-피해보자)
-  - [3-5. 크롤링으로 가져온 검색 결과를 한 번 더 검색할 순 없을까?](#3-5-크롤링으로-가져온-검색-결과를-한-번-더-검색할-순-없을까)
-    - [3-5-1. 가져온 HTML을 어디에 저장할지의 문제](#3-5-1-가져온-html을-어디에-저장할지의-문제)
-  - [3.6. 어떻게 익스텐션과 웹 페이지간 데이터를 연결 시킬 수 있을까](#3-6-어떻게-익스텐션과-웹-페이지간-데이터를-연결-시킬-수-있을까)
-- [4. 의사결정 방식](#4-의사결정-방식)
-- [5. 일정](#5-일정)
-- [6. 팀원](#6-팀원)
 
 
 ## 1. 개발 동기
-일상적으로 인터넷을 사용하다 보면, 저장해둔 북마크가 어느새 쌓여가는 경험을 하게 됩니다. 그러다 보니 북마크의 제목만으로는 실제 페이지의 내용을 파악하기 어려워, 필요한 정보를 찾기 위해 다시 방문해야 하는 불편함이 생겼습니다. 더불어 기존의 서비스들은 주로 북마크 제목을 기반으로 검색 기능을 제공했기에, 세세한 내용 검색에는 한계가 있었습니다.
+일상적으로 인터넷을 사용하다 보면, 저장해둔 북마크가 어느새 쌓여가는 경험을 하게 됩니다. 그러다 보니 북마크의 제목만으로는 실제 페이지의 내용을 파악하기 어려워, 필요한 정보를 찾기 위해선 저장해둔 북마크를 매번 직접 방문해 확인해야 하는 불편함이 생겼습니다. 더불어 기존의 서비스들은 주로 북마크 제목을 기반으로 검색 기능을 제공했기에, 세세한 내용 검색에는 한계가 있었습니다.
 
-이러한 문제점을 자연스럽게 해결하고자, 사용자가 별도의 로그인 없이도 크롬 브라우저에 저장된 북마크를 chromeAPI.bookmarks로 불러와, 각 북마크 내부의 키워드까지 부드럽게 검색할 수 있는 익스텐션을 개발하게 되었습니다.
+이 문제를 해결하기 위해, 사용자가 북마크를 일일이 방문하지 않아도 원하는 키워드를 검색하면 북마크 문서 내부를 탐색하고, 검색한 키워드가 포함된 북마크를 추출해주는 익스텐션을 개발하게 되었습니다.
 
 ## 2. 기술 스택
 <div align="center">
   
 | 프론트엔드 | 백엔드 | 빌드 | 테스트 |
 | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- | 
-| <img src="https://img.shields.io/badge/React-3B4250?style=flat-square&logo=React&logoColor=#61DAFB"/> <br /> <img src="https://img.shields.io/badge/Zustand-3B4250?style=flat-square&logo=React&logoColor=#3B4250"/> <br /> <img src="https://img.shields.io/badge/Tailwind-3B4250?style=flat-square&logo=tailwindcss&logoColor=#06B6D4"/> <br /> <img src="https://img.shields.io/badge/Axios-3B4250?style=flat-square&logo=Axios&logoColor=#5A29E4"/> | <img src="https://img.shields.io/badge/Node-3B4250?style=flat-square&logo=Node.js&logoColor=#5FA04E"/> <br /> <img src="https://img.shields.io/badge/Puppeteer-3B4250?style=flat-square&logo=Puppeteer&logoColor=#40B5A4"/> <br /> <img src="https://img.shields.io/badge/Express-3B4250?style=flat-square&logo=Express&logoColor=#646CFF"/>| <img src="https://img.shields.io/badge/Vite-3B4250?style=flat-square&logo=vite&logoColor=#646CFF"/> | <img src="https://img.shields.io/badge/Vitest-3B4250?style=flat-square&logo=vitest&logoColor=#6E9F18"/> |
+| <img src="https://img.shields.io/badge/React-3B4250?style=flat-square&logo=React&logoColor=#61DAFB"/> <br /> <img src="https://img.shields.io/badge/Zustand-3B4250?style=flat-square&logo=&logoColor=#3B4250"/> <br /> <img src="https://img.shields.io/badge/Tailwind-3B4250?style=flat-square&logo=tailwindcss&logoColor=#06B6D4"/> <br /> <img src="https://img.shields.io/badge/Axios-3B4250?style=flat-square&logo=Axios&logoColor=#5A29E4"/> | <img src="https://img.shields.io/badge/Node-3B4250?style=flat-square&logo=Node.js&logoColor=#5FA04E"/> <br /> <img src="https://img.shields.io/badge/Puppeteer-3B4250?style=flat-square&logo=Puppeteer&logoColor=#40B5A4"/> <br /> <img src="https://img.shields.io/badge/Express-3B4250?style=flat-square&logo=Express&logoColor=#646CFF"/>| <img src="https://img.shields.io/badge/Vite-3B4250?style=flat-square&logo=vite&logoColor=#646CFF"/> | <img src="https://img.shields.io/badge/Vitest-3B4250?style=flat-square&logo=vitest&logoColor=#6E9F18"/> |
 
 </div>
 
