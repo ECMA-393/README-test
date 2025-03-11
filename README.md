@@ -23,61 +23,67 @@
   
 | 프론트엔드 | 백엔드 | 빌드 | 테스트 |
 | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- | 
-| <img src="https://img.shields.io/badge/React-3B4250?style=flat-square&logo=React&logoColor=#61DAFB"/> <br /> <img src="https://img.shields.io/badge/Zustand-3B4250?style=flat-square&logo=&logoColor=#3B4250"/> <br /> <img src="https://img.shields.io/badge/Tailwind-3B4250?style=flat-square&logo=tailwindcss&logoColor=#06B6D4"/> <br /> <img src="https://img.shields.io/badge/Axios-3B4250?style=flat-square&logo=Axios&logoColor=#5A29E4"/> | <img src="https://img.shields.io/badge/Node-3B4250?style=flat-square&logo=Node.js&logoColor=#5FA04E"/> <br /> <img src="https://img.shields.io/badge/Puppeteer-3B4250?style=flat-square&logo=Puppeteer&logoColor=#40B5A4"/> <br /> <img src="https://img.shields.io/badge/Express-3B4250?style=flat-square&logo=Express&logoColor=#646CFF"/>| <img src="https://img.shields.io/badge/Vite-3B4250?style=flat-square&logo=vite&logoColor=#646CFF"/> | <img src="https://img.shields.io/badge/Vitest-3B4250?style=flat-square&logo=vitest&logoColor=#6E9F18"/> |
+| <img src="https://img.shields.io/badge/React-3B4250?style=flat-square&logo=React&logoColor=#61DAFB"/> <br /> <img src="https://img.shields.io/badge/Tailwind-3B4250?style=flat-square&logo=tailwindcss&logoColor=#06B6D4"/> <br /> | <img src="https://img.shields.io/badge/Node-3B4250?style=flat-square&logo=Node.js&logoColor=#5FA04E"/> <br /> <img src="https://img.shields.io/badge/Puppeteer-3B4250?style=flat-square&logo=Puppeteer&logoColor=#40B5A4"/> <br /> <img src="https://img.shields.io/badge/Express-3B4250?style=flat-square&logo=Express&logoColor=#646CFF"/>| <img src="https://img.shields.io/badge/Vite-3B4250?style=flat-square&logo=vite&logoColor=#646CFF"/> | <img src="https://img.shields.io/badge/Vitest-3B4250?style=flat-square&logo=vitest&logoColor=#6E9F18"/> |
 
 </div>
 
 
 ## 3. 구현 세부사항
-### 3-1. 어떻게 북마크를 가져올까?
-프로젝트의 출발점은 사용자가 입력한 키워드를 기준으로 크롬 북마크 데이터를 불러오는 것이었습니다.
+### 3-1. 크롬에서 북마크 가져오기
+프로젝트의 출발점은 사용자가 저장해 놓은 크롬 북마크 데이터를 불러오는 것이었고, 크롬 익스텐션 형태로 크롬의 API를 활용하기 위해 프로젝트를 기획한 만큼 Chrome Extension API인 ```chrome.bookmarks.getTree()```를 사용하여 북마크를 가져오기로 했습니다.
 
-이 프로젝트가 익스텐션 형태로 크롬의 API를 활용하기 위해 설계된 만큼, Chrome 공식 문서에서 제공하는 ```chromeAPI.getBookmark()``` 예제를 참고하여 구현을 진행하고자 했습니다. 
-하지만 문서를 살펴본 결과, 해당 예제는 DOM을 직접적으로 조작하는 방식을 사용하는 것으로 확인되었습니다.
-
-React 기반으로 개발 중이었기 때문에 DOM을 직접 조작하는 방식은 지양해야 했고, 이로 인해 공식문서에서 제공하는 방식과 다른 접근법이 필요했습니다. 
-따라서 직접 DOM을 다루지 않고 React의 방식으로 처리할 수 있는 대체 방법이 필요했습니다.
-방법을 구하기 전, 순수하게 ```chromeAPI.getBookmark()``` 가 어떤 data를 가져오는지 의문이 들어 자료를 꺼내 확인 해보았습니다.
-
-``` js
-  useEffect(() => {
-    chrome.bookmarks.getTree((treeList) => {
-      console.log(treeList);
-      getNewTree(treeList);
-    });
-  }, []);
-```
-  
-```chrome.bookmarks.get``` 로 가져온 북마크는 사용자 북마크 폴더 개수에 따라 얼마든지 중첩이 가능한 구조였습니다.
-
-![트리구조](https://github.com/user-attachments/assets/3c03b73c-46b6-44b1-8927-189628164a12)
-
-이러한 트리 구조는 React상태 관리시 불변성을 지키기 힘든 이슈가 있고, 불변성을 지키기 위해서 저희가 사용할 목적에 맞는 자료구조로의 개선이 필요했습니다. 
-저희는 사용자 폴더가 얼마나 트리 구조인지 알수 없기 때문에, 재귀를 사용해 얼마나 폴더가 중첩되어 있든 필요한 정보만 추출하여 리스트 저장해야 했기 때문에 재귀 함수를 작성하고자 했습니다.<br />
-재귀는 함수를 지속적으로 호출하면서, 콜 스택에 중첩되며 메모리를 많이 차지하게 되고 이는 속도 저하를 야기할 수 있었습니다.
-
-재귀 함수의 초기 버전은 forEach와 반복 조건 등 가독성 및 성능에서 떨어진다고 판단했고, 아래와 같이 조건을 중첩하고 불필요한 조건을 줄여 가독성과 성능을 향상 시켰으며, ```forEach```를 ```for...of```로 변경해 더욱 간결하고 중간에 반복을 종료할 수 있도록 리팩토링 했습니다.
-
+#### 3-1-1. ```chrome.bookmarks.getTree()```의 반환값
+```chrome.bookmarks.getTree()``` 가 어떤 반환값을 가져오는지 알기 위해 아래 코드를 사용해 확인 해봤습니다. 그 결과로 예측할 수 없는 깊이의 트리 구조라는 것을 알 수 있었습니다.
 ```js
-// 리팩토링 버전
-const getNewTree = (nodeItems) => {
-    const getNewTreeResult = [];
+chrome.bookmarks.getTree((treeList) => {
+  console.log(treeList);
+});
+```
 
-    function recursive(nodes) {
-        for (const node of nodes) {
-            if (node && typeof node === "object") {
-                if (node.title && node.url) {
-                    getNewTreeResult.push(node);
-                }
-                if (node.children) {
-                    recursive(node.children);
-                }
-            }
-        }
+<br />
+예측할 수 없는 트리구조인 이유는 크롬은 사용자 북마크 관리를 위해 폴더를 생성할 수 있고, 해당 폴더는 제한 없이 중첩할 수 있기 때문입니다.
+
+<div align="center">
+  <img width="400" src="https://github.com/user-attachments/assets/60ddd5bd-6567-47bd-adb4-99991bf00ce6" />
+</div>
+
+#### 3-1-2. 트리 구조 평탄화하기
+트리 구조를 평탄화 하기 위해서 처음에는 재귀 구조의 함수를 사용했지만 재귀는 콜 스택 중첩으로 인한 스택 오버플로우를 야기할 수 있고 이는 익스텐션 성능에 악영향을 끼칠 수 있다고 판단했고, 비재귀적인 접근방식으로 ```while``` 을 사용해 평탄화를 진행했습니다.<br /><br />
+<div align="center">
+  <table>
+    <tr>
+      <th>재귀 방식</th>
+      <th>비재귀 방식</th>
+    </tr>
+    <tr>
+      <td><img width="418" alt="스크린샷 2025-03-11 오후 2 26 40" src="https://github.com/user-attachments/assets/f0bb1cab-f4f3-4e01-8dd2-f1e2499ef010" /></td>
+      <td><img width="417" alt="스크린샷 2025-03-11 오후 2 45 24" src="https://github.com/user-attachments/assets/54aa3cb9-4ccd-4773-9bac-db4031b17a13" /></td>
+    </tr>
+  </table>
+</div>
+
+평탄화가 필요했던 이유는 트리 구조는 React상태 관리시 불변성을 지키기 힘들고, 값을 꺼내야 할 때 불편함이 존재하기 때문에 저희가 사용할 목적에 맞는 자료구조로의 개선이 필요했기 때문입니다.<br />
+따라서, 아래 코드처럼 while을 사용한 비재귀적 방식으로 스택 오버플로우를 회피하면서 중첩 구조의 북마크 객체를 평탄화 할 수 있었습니다.
+```js
+const getAllBookmark = (nodeItems) => {
+  const newBookmarkList = [];
+  const stack = [...nodeItems];
+
+  while (stack.length) {
+    const node = stack.pop();
+    if (Array.isArray(node)) {
+      stack.push(...node);
+    } else if (typeof node === "object" && node !== null) {
+      if (node.children) {
+        stack.push(...node.children);
+      }
+      if (node.title && node.url) {
+        newBookmarkList.push(node);
+      }
     }
+  }
 
-    recursive(nodeItems);
-    setUrlNewList(getNewTreeResult);
+  setBookmarkList(newBookmarkList);
 };
 ```
 
@@ -171,7 +177,7 @@ ReferenceError: localStorage is not defined
 
 <br/>
 
-### 3-5-2. 로컬 스토리지 용량이 초과되면 어떻게 될까?
+#### 3-5-2. 로컬 스토리지 용량이 초과되면 어떻게 될까?
 크롬 익스텐션에서는 크롤링된 데이터를 chrome.storage.local에 저장하여 추가적인 검색이 필요할 때 빠르게 조회할 수 있도록 설계했습니다. 하지만 Chrome Storage의 용량 제한(기본 10MB)으로 인해 저장 공간이 가득 차는 문제가 발생할 수 있었습니다. 이를 해결하기 위해, 저장 공간이 부족하면 가장 오래된 데이터를 자동으로 삭제한 후 새로운 데이터를 저장하는 방식을 적용했습니다.
 #### Storage 용량 초과 문제
 <div align="center">
