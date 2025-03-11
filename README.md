@@ -268,7 +268,9 @@ const isCheckTrueThisUrl = (url) => {
 - 코어 타임: 오전 10시 ~ 오전 12시<br />
   매일 정해진 시간에 오프라인 방식으로 모여 직접 스크럼 회의를 통해 협업 상황에서 발생할 수 있는 깃 전략, 컨벤션 문제들을 공유하고 같이 해결해 나갔습니다.<br /><br />
   <div align="center">
-    <img width="500" src="https://github.com/user-attachments/assets/690f4024-061f-493f-a9b5-59c67ac1ae8f" />
+    <a href="https://psh5032.notion.site/1776fb66a2e4802997e0f9c151b5a4c1">
+      <img width="500" src="https://github.com/user-attachments/assets/690f4024-061f-493f-a9b5-59c67ac1ae8f" />
+    </a>
   </div>
 
 - Git Flow 전략 + Squash merge를 통한 깔끔한 커밋 기록<br />
