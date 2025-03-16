@@ -65,7 +65,16 @@ chrome.bookmarks.getTree((treeList) => {
 예측할 수 없는 트리구조인 이유는 크롬은 사용자 북마크 관리를 위해 폴더를 생성할 수 있고, 해당 폴더는 제한 없이 중첩할 수 있기 때문입니다.
 
 <div align="center">
-  <img width="400" src="https://github.com/user-attachments/assets/60ddd5bd-6567-47bd-adb4-99991bf00ce6" />
+  <table>
+    <tr>
+      <th>크롬 북마크 폴더구조</th>
+    </tr>
+    <tr>
+      <td>
+        <img width="400" src="https://github.com/user-attachments/assets/60ddd5bd-6567-47bd-adb4-99991bf00ce6" />
+      </td>
+    </tr>
+  </table>
 </div>
 
 #### 3-1-2. 트리 구조 평탄화하기
